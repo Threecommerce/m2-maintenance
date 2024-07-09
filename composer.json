@@ -29,7 +29,5 @@
     "psr-4": {
       "Threecommerce\\Maintenance\\": ""
     }
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true
+  }
 }
