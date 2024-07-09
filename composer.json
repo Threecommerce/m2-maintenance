@@ -17,11 +17,12 @@
     "php": "~7.3.0||~7.4.0||~8.1.0||~8.2.0",
     "threecommerce/m2-base": "*"
   },
-  "repositories": [
-    {
+  "repositories": {
+    "threecommerce_base": {
       "type": "vcs",
-      "url": "https://github.com/yourusername/m2-base"
-    }],
+      "url": "https://github.com/Threecommerce/m2-base.git"
+    }
+  },
   "autoload": {
     "files": [
       "registration.php"
