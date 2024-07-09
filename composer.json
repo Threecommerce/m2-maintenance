@@ -20,7 +20,7 @@
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/yourusername/m2-base"
+      "url": "https://github.com/Threecommerce/m2-base.git"
     }
   ],
   "autoload": {
