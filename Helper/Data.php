@@ -62,7 +62,7 @@ class Data extends AbstractHelper
 
     public function getListIp()
     {
-        return $this->scopeConfig->getValue(self::LISTIP, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
+        return (string)$this->scopeConfig->getValue(self::LISTIP, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
     }
 
     public function getEnable()
