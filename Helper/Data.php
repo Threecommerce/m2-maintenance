@@ -39,7 +39,7 @@ class Data extends AbstractHelper
     public function setExcludeIp($ip)
     {
         $table = $this->resource->getTableName('core_config_data');
-        if ($this->connection->fetchOne("select count(value) from $table where value like '%$ip%'") > 0) return;
+        if ($this->connection->fetchOne("select count(value) from $table where scope = 'default' && scope_id = 0 path = '" . self::LISTIP . "' && value like '%$ip%'") > 0) return;
         $listIpOld = $this->connection->fetchOne("select value from $table where path = '" . self::LISTIP . "'");
         $data = array(
             'scope' => 'default',
