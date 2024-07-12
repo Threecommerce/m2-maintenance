@@ -19,5 +19,6 @@
                     <label>Lista degli ip da escludere</label>
                 </field>
             </group>
+        </section>
     </system>
 </config>
