@@ -6,27 +6,38 @@ namespace Threecommerce\Maintenance\Helper;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\ResourceConnection;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Data extends AbstractHelper
 {
     const DS = '/';
+    const ENABLE = 'maintenance/general/enable';
+    const LISTIP = 'maintenance/general/ipList';
     const MAINTENANCE_FILENAME = '3com.Maintenance';
     protected $connection;
     protected $fileName;
+    protected $storeManager;
+    protected $resource;
 
     public function __construct(
-        ResourceConnection $resource,
-        DirectoryList      $directoryList
+        ResourceConnection    $resource,
+        StoreManagerInterface $storeManager,
+        DirectoryList         $directoryList
     )
     {
+        $this->storeManager = $storeManager;
         $this->fileName = $directoryList->getRoot() . self::DS . self::MAINTENANCE_FILENAME;
+        $this->resource = $resource;
         $this->connection = $resource->getConnection();
     }
 
     public function setExcludeIp($ip)
     {
-        if ($this->connection->fetchOne("select count(ip) from 3com_maintenance_ip where ip = '$ip'") == 0)
-            $this->connection->insert("3com_maintenance_ip", ['ip' => $ip]);
+        $table = $this->resource->getTableName('core_config_data');
+        if ($this->connection->fetchOne("select count(value) from $table where value like '%$ip%'") > 0) return;
+        $listIpOld = $this->connection->fetchOne("select value from $table where path = '".self::LISTIP."'");
+        $this->connection->insert($table, ['ip' => $listIpOld . ',' . $ip]);
     }
 
     public function addFlag()
@@ -47,11 +58,11 @@ class Data extends AbstractHelper
 
     public function getListIp()
     {
-        $listIp = $this->connection->fetchAll("select ip from 3com_maintenance_ip");
-        $stringIp = ',';
-        foreach ($listIp as $ip) {
-            $stringIp .= $ip['ip'] . ',';
-        }
-        return $stringIp;
+        return $this->scopeConfig->getValue(self::LISTIP, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
+    }
+
+    public function getEnable()
+    {
+        return $this->scopeConfig->getValue(self::ENABLE, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
     }
 }

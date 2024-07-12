@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="threecommerce_plugins" translate="label" sortOrder="9999">
+            <label>Threecommerce Plugins</label>
+        </tab>
+        <section id="maintenance" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>Maintenance Config</label>
+            <tab>threecommerce_plugins</tab>
+            <resource>Threecommerce_Maintenance::maintenance_config</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Maintenance Configuration</label>
+                <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Modulo Abilitato</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="ipList" translate="label" type="text" sortOrder="2" showInDefault="6" showInWebsite="1" showInStore="1">
+                    <label>Lista degli ip da escludere</label>
+                </field>
+            </group>
+    </system>
+</config>
