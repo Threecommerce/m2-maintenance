@@ -29,6 +29,7 @@ class Data extends AbstractHelper
         DirectoryList         $directoryList
     )
     {
+        $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
         $this->fileName = $directoryList->getRoot() . self::DS . self::MAINTENANCE_FILENAME;
         $this->resource = $resource;
