@@ -39,6 +39,7 @@ class Enable extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->helper->setEnable();
         $this->helper->addFlag();
         $listIp = $input->getOption(self::VARIABLE);
         if ($listIp) {

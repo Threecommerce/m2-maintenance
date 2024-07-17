@@ -31,6 +31,7 @@ class Disable extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->helper->setDisable();
         $this->helper->removeFlag();
         $output->writeln('<info>Maintenance mode disable</info>');
         return Cli::RETURN_SUCCESS;

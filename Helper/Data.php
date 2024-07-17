@@ -21,6 +21,7 @@ class Data extends AbstractHelper
     protected $storeManager;
     protected $resource;
     protected $scopeConfig;
+    protected $configTable;
 
     public function __construct(
         ScopeConfigInterface  $scopeConfig,
@@ -32,38 +33,65 @@ class Data extends AbstractHelper
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
         $this->fileName = $directoryList->getRoot() . self::DS . self::MAINTENANCE_FILENAME;
-        $this->resource = $resource;
+        $this->configTable = $resource->getTableName('core_config_data');
         $this->connection = $resource->getConnection();
     }
 
     public function setExcludeIp($ip)
     {
-        $table = $this->resource->getTableName('core_config_data');
-        if ($this->connection->fetchOne("select count(*) from $table where scope = 'default' && scope_id = 0 && path = '" . self::LISTIP . "' && value like '%$ip%'") > 0) return;
-        $listIpOld = $this->connection->fetchOne("select value from $table where path = '" . self::LISTIP . "'");
+        $config = $this->getConfigInfo(self::LISTIP, $ip);
+        if (!$config) return;
         $value = $ip;
+        $listIpOld = $config['value'];
         if ($listIpOld)
             $value = $listIpOld . ',' . $ip;
+        $this->setConfigInfo(self::LISTIP, $value, $config['operation']);
+    }
+
+    protected function setConfigInfo($path, $value, $operation, $scope = 'default', $scopeId = '0')
+    {
         $data = array(
-            'scope' => 'default',
+            'scope' => $scope,
             'scope_id' => '0',
-            'path' => self::LISTIP,
+            'path' => $path,
             'value' => $value,
         );
         $where = array(
-            'scope=?' => 'default',
-            'scope_id=?' => '0',
-            'path=?' => self::LISTIP
+            'scope=?' => $scope,
+            'scope_id=?' => $scopeId,
+            'path=?' => $path
         );
-        if ($this->connection->fetchOne("select count(*) from $table where scope = 'default' && scope_id = 0 && path = '" . self::LISTIP . "'") > 0)
-            $this->connection->update($table, $data, $where);
+        if ($operation == 'update')
+            $this->connection->update($this->configTable, $data, $where);
         else
-            $this->connection->insert($table, $data);
+            $this->connection->insert($this->configTable, $data);
+    }
+
+    protected function getConfigInfo($path, $value, $scope = 'default', $scopeId = '0')
+    {
+
+        if ($this->connection->fetchOne("select count(*) from $this->configTable where scope = '$scope' && scope_id = $scopeId && path = '$path' && value like '%$value%'") > 0) return false;
+        $listIpOld = $this->connection->fetchOne("select value from $this->configTable where path = '" . self::LISTIP . "'");
+        if ($this->connection->fetchOne("select count(*) from $this->configTable where scope = '$scope' && scope_id = $scopeId && path = '$path'") > 0) return array('operation' => 'update', 'value' => $listIpOld);
+        return array('operation' => 'insert', 'value' => $value);
     }
 
     public function addFlag()
     {
         file_put_contents($this->fileName, '');
+    }
+
+    public function setEnable()
+    {
+        $config = $this->getConfigInfo(self::ENABLE, '1');
+        if (!$config) return;
+        $this->setConfigInfo(self::ENABLE, '1', $config['operation']);
+    }
+    public function setDisable()
+    {
+        $config = $this->getConfigInfo(self::ENABLE, '0');
+        if (!$config) return;
+        $this->setConfigInfo(self::ENABLE, '0', $config['operation']);
     }
 
     public function removeFlag()
