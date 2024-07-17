@@ -39,18 +39,26 @@ class Data extends AbstractHelper
     public function setExcludeIp($ip)
     {
         $table = $this->resource->getTableName('core_config_data');
-        if ($this->connection->fetchOne("select count(value) from $table where scope = 'default' && scope_id = 0 && path = '" . self::LISTIP . "' && value like '%$ip%'") > 0) return;
+        if ($this->connection->fetchOne("select count(*) from $table where scope = 'default' && scope_id = 0 && path = '" . self::LISTIP . "' && value like '%$ip%'") > 0) return;
         $listIpOld = $this->connection->fetchOne("select value from $table where path = '" . self::LISTIP . "'");
-        if ($this->connection->fetchOne("select count(value) from $table where scope = 'default' && scope_id = 0 && path = '" . self::LISTIP . "'") > 0){
-
-        }
+        $value = $ip;
+        if ($listIpOld)
+            $value = $listIpOld . ',' . $ip;
         $data = array(
             'scope' => 'default',
-            'scope_id' => 0,
+            'scope_id' => '0',
             'path' => self::LISTIP,
-            'value' => $listIpOld . ',' . $ip,
+            'value' => $value,
         );
-        $this->connection->insert($table, $data);
+        $where = array(
+            'scope=?' => 'default',
+            'scope_id=?' => '0',
+            'path=?' => self::LISTIP
+        );
+        if ($this->connection->fetchOne("select count(*) from $table where scope = 'default' && scope_id = 0 && path = '" . self::LISTIP . "'") > 0)
+            $this->connection->update($table, $data, $where);
+        else
+            $this->connection->insert($table, $data);
     }
 
     public function addFlag()
