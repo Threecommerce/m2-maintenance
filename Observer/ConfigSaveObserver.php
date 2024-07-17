@@ -20,7 +20,7 @@ class ConfigSaveObserver implements ObserverInterface
 
     public function execute(Observer $observer)
     {
-        if ($this->getEnable() == 1)
+        if ($this->helper->getEnable() == 1)
             $this->helper->addFlag();
         else
             $this->helper->removeFlag();
