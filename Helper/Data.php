@@ -15,7 +15,7 @@ class Data extends AbstractHelper
     const DS = '/';
     const ENABLE = 'maintenance/general/enable';
     const LISTIP = 'maintenance/general/ipList';
-    const MAINTENANCE_FILENAME = '3com.Maintenance';
+    const MAINTENANCE_FILENAME = '3com.maintenance';
     protected $connection;
     protected $fileName;
     protected $storeManager;
