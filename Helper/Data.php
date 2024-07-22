@@ -42,7 +42,7 @@ class Data extends AbstractHelper
         $config = $this->getConfigInfo(self::LISTIP, $ip);
         if (!$config) return;
         $value = $ip;
-        $listIpOld = $config['value'];
+        $listIpOld = '';
         if ($listIpOld)
             $value = $listIpOld . ',' . $ip;
         $this->setConfigInfo(self::LISTIP, $value, $config['operation']);
