@@ -42,9 +42,11 @@ class Data extends AbstractHelper
         $config = $this->getConfigInfo(self::LISTIP, $ip);
         if (!$config) return;
         $value = $ip;
-        $listIpOld = $config['value'];
-        if ($listIpOld)
-            $value = $listIpOld . ',' . $ip;
+        if($config['operation']=='update') {
+            $listIpOld = $config['value'];
+            if ($listIpOld)
+                $value = $listIpOld . ',' . $ip;
+        }
         $this->setConfigInfo(self::LISTIP, $value, $config['operation']);
     }
 
@@ -69,10 +71,10 @@ class Data extends AbstractHelper
 
     protected function getConfigInfo($path, $value, $scope = 'default', $scopeId = '0')
     {
-
         if ($this->connection->fetchOne("select count(*) from $this->configTable where scope = '$scope' && scope_id = $scopeId && path = '$path' && value like '%$value%'") > 0) return false;
-        $listIpOld = $this->connection->fetchOne("select value from $this->configTable where path = '" . self::LISTIP . "'");
-        if ($this->connection->fetchOne("select count(*) from $this->configTable where scope = '$scope' && scope_id = $scopeId && path = '$path'") > 0) return array('operation' => 'update', 'value' => $listIpOld);
+        $listIpOld = $this->connection->fetchOne("select value from $this->configTable where scope = '$scope' && scope_id = $scopeId && path = '$path'");
+        if (!empty($listIpOld))
+            return array('operation' => 'update', 'value' => $listIpOld);
         return array('operation' => 'insert', 'value' => $value);
     }
 
@@ -83,14 +85,12 @@ class Data extends AbstractHelper
 
     public function setEnable()
     {
-        $config = $this->getConfigInfo(self::ENABLE, '1');
-        if (!$config) return;
+        if (!$this->getConfigInfo(self::ENABLE, '1')) return;
         $this->setConfigInfo(self::ENABLE, '1', $config['operation']);
     }
     public function setDisable()
     {
-        $config = $this->getConfigInfo(self::ENABLE, '0');
-        if (!$config) return;
+        if (!$this->getConfigInfo(self::ENABLE, '0')) return;
         $this->setConfigInfo(self::ENABLE, '0', $config['operation']);
     }
 
