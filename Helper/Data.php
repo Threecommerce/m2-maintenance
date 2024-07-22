@@ -42,7 +42,8 @@ class Data extends AbstractHelper
         $config = $this->getConfigInfo(self::LISTIP, $ip);
         if (!$config) return;
         $value = $ip;
-        if($config['operation']=='update') {
+        if ($config['operation'] == 'update') {
+            if (strstr(',' . $config['value'] . ',', ',' . $ip . ',')) return;
             $listIpOld = $config['value'];
             if ($listIpOld)
                 $value = $listIpOld . ',' . $ip;
@@ -71,7 +72,6 @@ class Data extends AbstractHelper
 
     protected function getConfigInfo($path, $value, $scope = 'default', $scopeId = '0')
     {
-        if ($this->connection->fetchOne("select count(*) from $this->configTable where scope = '$scope' && scope_id = $scopeId && path = '$path' && value like '%$value%'") > 0) return false;
         $listIpOld = $this->connection->fetchOne("select value from $this->configTable where scope = '$scope' && scope_id = $scopeId && path = '$path'");
         if (!empty($listIpOld))
             return array('operation' => 'update', 'value' => $listIpOld);
@@ -85,13 +85,16 @@ class Data extends AbstractHelper
 
     public function setEnable()
     {
-        if (!$this->getConfigInfo(self::ENABLE, '1')) return;
+        $config = $this->getConfigInfo(self::ENABLE, '1');
         $this->setConfigInfo(self::ENABLE, '1', $config['operation']);
+        exec('php bin/magento c:f');
     }
+
     public function setDisable()
     {
-        if (!$this->getConfigInfo(self::ENABLE, '0')) return;
+        $config = $this->getConfigInfo(self::ENABLE, '0');
         $this->setConfigInfo(self::ENABLE, '0', $config['operation']);
+        exec('php bin/magento c:f');
     }
 
     public function removeFlag()
