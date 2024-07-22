@@ -47,10 +47,10 @@ class Redirect
 
     public function beforeDispatch(FrontControllerInterface $subject, RequestInterface $request)
     {
-        if ($request->isXmlHttpRequest())  return;
+        if ($request->isXmlHttpRequest()) return;
         if (!file_exists($this->helper->getFlagName())) return;
         if ($this->state->getAreaCode() === Area::AREA_ADMINHTML) return;
-        if (strstr($this->helper->getListIp(), ',' . $_SERVER['REMOTE_ADDR'] . ',')) return;
+        if (strstr(',' . $this->helper->getListIp() . ',', ',' . $_SERVER['REMOTE_ADDR'] . ',')) return;
         $targetUrl = $this->storeManager->getStore()->getBaseUrl() . 'sito-in-manutenzione';
         if ($this->currentUrl == $targetUrl) return;
         $this->response->setRedirect($targetUrl, 302);
