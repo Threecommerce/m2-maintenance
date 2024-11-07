@@ -55,7 +55,7 @@ class Data extends AbstractHelper
     {
         $data = array(
             'scope' => $scope,
-            'scope_id' => '0',
+            'scope_id' => $scopeId,
             'path' => $path,
             'value' => $value,
         );
@@ -72,9 +72,9 @@ class Data extends AbstractHelper
 
     protected function getConfigInfo($path, $value, $scope = 'default', $scopeId = '0')
     {
-        $listIpOld = $this->connection->fetchOne("select value from $this->configTable where scope = '$scope' && scope_id = $scopeId && path = '$path'");
-        if (!empty($listIpOld))
-            return array('operation' => 'update', 'value' => $listIpOld);
+        $infoConfig = $this->connection->fetchOne("select value from $this->configTable where scope = '$scope' && scope_id = $scopeId && path = '$path'");
+        if ($infoConfig != '')
+            return array('operation' => 'update', 'value' => $infoConfig);
         return array('operation' => 'insert', 'value' => $value);
     }
 
